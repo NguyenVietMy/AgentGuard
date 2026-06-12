@@ -37,7 +37,7 @@ The MVP proves exactly one thing: **conditional, argument-level, deny-by-default
 This is the highest-leverage part. It must look effortless. Target: a developer reads it and thinks "oh, that's obviously how it should work."
 
 ```python
-from agentguard import Policy, tool, allow, deny
+from agentguard import Policy, email_domain, tool, value_lte
 
 # 1. Declare the policy. Deny-by-default: only what's listed is permitted.
 policy = Policy(
@@ -49,16 +49,14 @@ policy = Policy(
         # This is the binary-vs-conditional point made concrete.
         tool(
             "send_email",
-            allow=lambda args: args["to"].endswith("@mycompany.com"),
+            allow=email_domain("to", ["mycompany.com"]),
         ),
 
         tool(
             "transfer_funds",
-            allow=lambda args: args["amount"] <= 1000,
+            allow=value_lte("amount", 1000),
         ),
     ],
-    # Optional: lock the system prompt so it can't be overridden downstream.
-    locked_system_prompt="You are a travel booking assistant.",
 )
 # Note: delete_user, refund, etc. are simply NOT listed -> denied by default.
 ```
