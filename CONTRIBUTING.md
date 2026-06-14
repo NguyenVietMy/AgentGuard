@@ -9,9 +9,9 @@ deny-by-default authorization for tool calls. Integrations may add optional depe
 ## Development Setup
 
 ```bash
-uv sync --extra dev
-uv run pytest
-uv run ruff check .
+uv sync --extra dev --extra langchain
+uv run --extra dev --extra langchain pytest
+uv run --extra dev --extra langchain ruff check .
 ```
 
 ## Project Rules
@@ -27,8 +27,8 @@ uv run ruff check .
 Before opening a PR:
 
 ```bash
-uv run pytest
-uv run ruff check .
+uv run --extra dev --extra langchain pytest
+uv run --extra dev --extra langchain ruff check .
 ```
 
 In the PR description, include:

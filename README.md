@@ -131,7 +131,8 @@ Use `log_only` to observe what would be denied before enforcing a policy.
 
 ## LangChain Integration
 
-AgentGuard can wrap LangChain-style tools at the `invoke`/`ainvoke` boundary:
+AgentGuard can wrap LangChain tools at the `invoke`/`ainvoke` boundary. Wrapped tools are LangChain
+`BaseTool` instances, so they can be passed anywhere normal LangChain tools are expected:
 
 ```python
 from agentguard import Policy, email_domain, tool
