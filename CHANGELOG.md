@@ -13,6 +13,7 @@ semantic versioning after the first public release.
 - Guard decorator for raw tool dispatchers.
 - In-memory and JSONL audit logging.
 - Reusable policy presets for common argument-level constraints.
+- CLI helpers for checking policy decisions and inspecting JSONL audit logs.
 - Prompt-injection containment and transfer-limit demos.
 - GitHub Actions CI.
 
