@@ -119,6 +119,32 @@ guard = Guard(policy, on_deny="refuse", audit_logger=audit)
 Audit entries include a schema version, timestamp, tool name, redacted args, boolean decision,
 human-readable decision text, reason code, and reason.
 
+## CLI
+
+AgentGuard includes a small CLI for checking policies and inspecting audit logs:
+
+```bash
+agentguard check policy.py send_email --args '{"to": "alice@mycompany.com"}'
+agentguard check policy.py send_email --args-file tool-call.json
+agentguard check policy.py send_email --args '{"to": "attacker@evil.com"}' --json
+agentguard audit audit.jsonl --decision deny
+agentguard audit audit.jsonl --summary --json
+```
+
+The policy file must define a `Policy` named `policy` by default:
+
+```python
+from agentguard import Policy, email_domain, tool
+
+policy = Policy([
+    tool("send_email", allow=email_domain("to", ["mycompany.com"])),
+])
+```
+
+Use `--policy make_policy` if the file exposes a zero-argument factory instead. `agentguard check`
+exits `0` for allowed decisions, `1` for denied decisions, and `2` for CLI or policy loading errors.
+On PowerShell, `--args-file` is usually easier than escaping inline JSON.
+
 ## Deny Modes
 
 ```python

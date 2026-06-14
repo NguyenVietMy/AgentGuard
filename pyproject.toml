@@ -11,6 +11,9 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = []
 
+[project.scripts]
+agentguard = "agentguard.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
