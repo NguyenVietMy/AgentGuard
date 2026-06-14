@@ -16,6 +16,9 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.4",
 ]
+langchain = [
+    "langchain>=1.0",
+]
 
 [tool.ruff]
 line-length = 120

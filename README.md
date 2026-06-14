@@ -1,5 +1,7 @@
 # AgentGuard
 
+[![CI](https://github.com/NguyenVietMy/AgentGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/NguyenVietMy/AgentGuard/actions/workflows/ci.yml)
+
 Deny-by-default, argument-level authorization for AI agent tool calls.
 
 Tool access is binary; real authorization is conditional. AgentGuard sits between an LLM's tool-call output
@@ -12,6 +14,12 @@ tricked model is allowed to do.
 
 ```bash
 pip install agentguard
+```
+
+For LangChain/LangGraph tools:
+
+```bash
+pip install "agentguard[langchain]"
 ```
 
 ## Quick Start
@@ -121,6 +129,37 @@ Guard(policy, on_deny="log_only") # record the denial but still execute
 
 Use `log_only` to observe what would be denied before enforcing a policy.
 
+## LangChain Integration
+
+AgentGuard can wrap LangChain-style tools at the `invoke`/`ainvoke` boundary:
+
+```python
+from agentguard import Policy, email_domain, tool
+from agentguard.integrations.langchain import guard_tools
+from langchain.tools import tool as langchain_tool
+
+
+@langchain_tool
+def send_email(to: str, body: str) -> str:
+    """Send an email."""
+    return f"sent email to {to}"
+
+
+policy = Policy([
+    tool("send_email", allow=email_domain("to", ["mycompany.com"])),
+])
+
+safe_tools = guard_tools([send_email], policy, on_deny="refuse")
+
+safe_tools[0].invoke({"to": "alice@mycompany.com", "body": "hello"})
+# "sent email to alice@mycompany.com"
+
+safe_tools[0].invoke({"to": "attacker@evil.com", "body": "customer data"})
+# "Action 'send_email' is not permitted."
+```
+
+See `examples/langchain_email_guard/` for a runnable example.
+
 ## Demos
 
 Run the included demos:
@@ -161,7 +200,7 @@ The layers are complementary.
 
 AgentGuard is intentionally small at the core. The next adoption-focused milestones are:
 
-1. Framework adapters for LangChain/LangGraph and the OpenAI Agents SDK.
+1. OpenAI Agents SDK integration.
 2. More presets for common risky tools.
 3. CLI helpers for checking policy decisions and inspecting audit logs.
 4. MCP proxy experiments for framework-independent tool authorization.
@@ -170,5 +209,5 @@ AgentGuard is intentionally small at the core. The next adoption-focused milesto
 
 - Authorization is one layer; pair it with input scanning and good tool design.
 - AgentGuard cannot decide your policy for you. You must know what actions your agent should be allowed to take.
-- The current package protects Python dispatch paths. Framework-specific integrations are planned.
+- The LangChain integration wraps Python tool objects; hosted/server-side tools still need provider-specific controls.
 - Keep high-risk tools narrow. A policy layer is not a substitute for safe underlying tool implementations.
